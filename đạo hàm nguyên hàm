@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Đạo Hàm và Nguyên Hàm</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .quiz-container {
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      max-width: 600px;
+      width: 100%;
+    }
+    .question {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .answers {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .answer {
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      text-align: center;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    .answer:hover {
+      background-color: #f0f0f0;
+    }
+    .answer.correct {
+      background-color: #4caf50;
+      color: #fff;
+    }
+    .answer.incorrect {
+      background-color: #f44336;
+      color: #fff;
+    }
+    .explanation {
+      margin-top: 20px;
+      padding: 10px;
+      background-color: #ffeb3b;
+      color: #000;
+      font-weight: bold;
+      border-radius: 6px;
+      display: none;
+    }
+    .next-button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      display: none;
+      text-align: center;
+    }
+    .next-button:hover {
+      background-color: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="question">
+      <!-- Câu hỏi sẽ được chèn ở đây -->
+    </div>
+    <div class="answers">
+      <!-- Đáp án sẽ được chèn ở đây -->
+    </div>
+    <div class="explanation">
+      <!-- Lời giải sẽ được chèn ở đây -->
+    </div>
+    <button class="next-button">Câu hỏi tiếp theo</button>
+  </div>
+
+  <script>
+    // Danh sách 300 câu hỏi luyện tập
+    const questions = [];
+
+    // Tạo 150 câu hỏi đạo hàm
+    for (let i = 1; i <= 150; i++) {
+      questions.push({
+        question: `Câu ${i}: Đạo hàm của hàm số f(x) = x^${i} là gì?`,
+        answers: [
+          { text: `A. ${i}x^${i - 1}`, correct: true },
+          { text: `B. x^${i}`, correct: false },
+          { text: `C. ${i - 1}x^${i - 2}`, correct: false },
+          { text: `D. ${i}x^${i}`, correct: false }
+        ],
+        explanation: `Đạo hàm của x^n là n*x^(n-1), nên kết quả là ${i}x^${i - 1}.`
+      });
+    }
+
+    // Tạo 150 câu hỏi nguyên hàm
+    for (let i = 1; i <= 150; i++) {
+      questions.push({
+        question: `Câu ${i + 150}: Nguyên hàm của hàm số f(x) = x^${i} là gì?`,
+        answers: [
+          { text: `A. (1/${i + 1})x^${i + 1} + C`, correct: true },
+          { text: `B. x^${i} + C`, correct: false },
+          { text: `C. ${i}x^${i - 1} + C`, correct: false },
+          { text: `D. (1/${i})x^${i} + C`, correct: false }
+        ],
+        explanation: `Nguyên hàm của x^n là (1/(n+1))x^(n+1) + C, nên kết quả là (1/${i + 1})x^${i + 1} + C.`
+      });
+    }
+
+    // Truy cập các thành phần trong DOM
+    const questionElement = document.querySelector('.question');
+    const answersContainer = document.querySelector('.answers');
+    const explanationElement = document.querySelector('.explanation');
+    const nextButton = document.querySelector('.next-button');
+
+    // Hàm hiển thị câu hỏi
+    function showQuestion(questionData) {
+      // Xóa nội dung cũ
+      questionElement.textContent = questionData.question;
+      answersContainer.innerHTML = '';
+      explanationElement.style.display = 'none';
+      nextButton.style.display = 'none';
+
+      // Tạo đáp án
+      questionData.answers.forEach(answerData => {
+        const answerElement = document.createElement('div');
+        answerElement.classList.add('answer');
+        answerElement.textContent = answerData.text;
+        answerElement.dataset.correct = answerData.correct;
+
+        // Thêm sự kiện click
+        answerElement.addEventListener('click', () => {
+          // Vô hiệu hóa các đáp án
+          const allAnswers = document.querySelectorAll('.answer');
+          allAnswers.forEach(ans => ans.style.pointerEvents = 'none');
+
+          // Kiểm tra đúng/sai
+          if (answerData.correct === true) {
+            answerElement.classList.add('correct');
+          } else {
+            answerElement.classList.add('incorrect');
+          }
+
+          // Hiển thị lời giải
+          explanationElement.textContent = questionData.explanation;
+          explanationElement.style.display = 'block';
+
+          // Hiển thị nút tiếp theo
+          nextButton.style.display = 'block';
+        });
+
+        // Thêm đáp án vào giao diện
+        answersContainer.appendChild(answerElement);
+      });
+    }
+
+    // Chọn câu hỏi ngẫu nhiên
+    function getRandomQuestion() {
+      const randomIndex = Math.floor(Math.random() * questions.length);
+      return questions[randomIndex];
+    }
+
+    // Khi nhấn nút "Câu hỏi tiếp theo"
+    nextButton.addEventListener('click', () => {
+      const nextQuestion = getRandomQuestion();
+      showQuestion(nextQuestion);
+    });
+
+    // Hiển thị câu hỏi đầu tiên khi tải trang
+    showQuestion(getRandomQuestion());
+  </script>
+</body>
+</html>
